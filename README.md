@@ -37,16 +37,3 @@ Data utama yang digunakan dalam aplikasi ini meliputi:
 ### e. Evaluasi Strategi Konten
 - Sistem akan menampilkan daftar konten dengan **engagement tertinggi** dalam periode tertentu untuk membantu pengguna mengevaluasi strategi mereka.
 
----
-
-## 📌 Teknologi yang Digunakan
-- Bahasa Pemrograman: **Go (Golang)**
-- Input/Output: Menggunakan `fmt` 
-- Penyimpanan Sementara: Menggunakan array 
-
----
-
-## 📷 Tampilan
-> CLI sederhana 
-
----
