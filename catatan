@@ -1,0 +1,23 @@
+	for i = 0; i < n; i++ {
+		if strings.EqualFold(data[i].Judul, judul) {
+			fmt.Println("== Ubah Data Konten ==")
+			fmt.Print("Judul Baru: ")
+			fmt.Scan(&data[i].Judul)
+			fmt.Print("Platform: ")
+			fmt.Scan(&data[i].Platform)
+			fmt.Print("Kategori: ")
+			fmt.Scan(&data[i].Kategori)
+			fmt.Print("Tanggal: ")
+			fmt.Scan(&data[i].Tanggal)
+			fmt.Print("Jam: ")
+			fmt.Scan(&data[i].Jam)
+			fmt.Print("Like: ")
+			fmt.Scan(&data[i].Like)
+			fmt.Print("Komentar: ")
+			fmt.Scan(&data[i].Komentar)
+			fmt.Print("Share: ")
+			fmt.Scan(&data[i].Share)
+			fmt.Println("== Konten berhasil diubah. ==")
+			return
+		}
+	}
