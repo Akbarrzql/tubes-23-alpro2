@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
 )
 
 const maxContent int = 100
@@ -59,10 +56,9 @@ func menu(pilihan int, data kontenArray, n int) {
 		urutkanDaftarKonten(data, n)
 	case 5:
 		// mengurutkan konten berdasarkan engagement
-		//urutkanBerdasarkanEngagement()
+		urutkanBerdasarkanEngagement(data, n)
 	case 6:
 		fmt.Println("Terima kasih telah menggunakan aplikasi ini.")
-		return
 	default:
 		fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
 	}
@@ -101,8 +97,6 @@ func kustomisasiDataKonten(pilihan int, data kontenArray, n int) {
 // prosedur createKonten
 func createKonten(data *kontenArray, n *int) {
 	var i int
-	var judul, platform, kategori, tanggal, jam string
-	var reader = bufio.NewReader(os.Stdin)
 
 	if *n >= maxContent {
 		fmt.Println("Data sudah penuh.")
@@ -110,33 +104,28 @@ func createKonten(data *kontenArray, n *int) {
 	}
 
 	fmt.Print("Masukkan Judul Konten: ")
-	judul, _ = reader.ReadString('\n')
-	data[*n].Judul = strings.TrimSpace(judul)
+	fmt.Scanln(&data[*n].Judul)
 
 	fmt.Print("Masukkan Platform: ")
-	platform, _ = reader.ReadString('\n')
-	data[*n].Platform = strings.TrimSpace(platform)
+	fmt.Scanln(&data[*n].Platform)
 
 	fmt.Print("Masukkan Kategori: ")
-	kategori, _ = reader.ReadString('\n')
-	data[*n].Kategori = strings.TrimSpace(kategori)
+	fmt.Scanln(&data[*n].Kategori)
 
-	fmt.Print("Masukkan Tanggal: ")
-	tanggal, _ = reader.ReadString('\n')
-	data[*n].Tanggal = strings.TrimSpace(tanggal)
+	fmt.Print("Masukkan Tanggal (format: YYYY-MM-DD, contoh: 2025-02-01): ")
+	fmt.Scanln(&data[*n].Tanggal)
 
 	fmt.Print("Masukkan Jam: ")
-	jam, _ = reader.ReadString('\n')
-	data[*n].Jam = strings.TrimSpace(jam)
+	fmt.Scanln(&data[*n].Jam)
 
-	fmt.Print("Masukkan Jumlah Like: ")
-	fmt.Scan(&data[*n].Like)
+	fmt.Print("Masukkan Jumlah Like (Masukkan dalam jumlah angka): ")
+	fmt.Scanln(&data[*n].Like)
 
-	fmt.Print("Masukkan Jumlah Komentar: ")
-	fmt.Scan(&data[*n].Komentar)
+	fmt.Print("Masukkan Jumlah Komentar (Masukkan dalam jumlah angka): ")
+	fmt.Scanln(&data[*n].Komentar)
 
-	fmt.Print("Masukkan Jumlah Share: ")
-	fmt.Scan(&data[*n].Share)
+	fmt.Print("Masukkan Jumlah Share (Masukkan dalam jumlah angka): ")
+	fmt.Scanln(&data[*n].Share)
 
 	*n++
 	fmt.Println("Konten berhasil ditambahkan.")
@@ -151,16 +140,18 @@ func createKonten(data *kontenArray, n *int) {
 
 // prosedur updateKonten
 func updateKonten(data *kontenArray, n int) {
-	var judul, konfirmasi string
+	var judul, konfirmasi, tanggalJam string
 	var i, pilihan int
 
 	fmt.Println("\n=== Daftar Konten Tersedia ===")
 	fmt.Printf("%-4s %-16s %-10s %-10s %-10s %-6s %-6s %-6s\n",
 		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share")
-	fmt.Println(strings.Repeat("-", 80))
+	for i = 0; i < 75; i++ {
+		fmt.Print("-")
+	}
 
 	for i = 0; i < n; i++ {
-		tanggalJam := data[i].Tanggal + " " + data[i].Jam
+		tanggalJam = data[i].Tanggal + " " + data[i].Jam
 		fmt.Printf("%-4d %-16s %-10s %-10s %-10s %-6d %-6d %-6d\n",
 			i+1, data[i].Judul, data[i].Platform, data[i].Kategori,
 			tanggalJam, data[i].Like, data[i].Komentar, data[i].Share)
@@ -171,7 +162,9 @@ func updateKonten(data *kontenArray, n int) {
 
 	//mencari konten berdasarkan judul
 	for i = 0; i < n; i++ {
-		if strings.EqualFold(data[i].Judul, judul) {
+		//harus diubah jangan pakai library strings
+		//strings.EqualFold(data[i].Judul, judul)
+		if data[i].Judul == judul {
 			fmt.Println("Konten ditemukan.")
 			fmt.Printf("Judul: %s\n", data[i].Judul)
 			fmt.Printf("Platform: %s\n", data[i].Platform)
@@ -230,7 +223,6 @@ func updateKonten(data *kontenArray, n int) {
 				fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
 				kustomisasiDataKonten(0, *data, n)
 			}
-			return
 		}
 	}
 
@@ -238,16 +230,13 @@ func updateKonten(data *kontenArray, n int) {
 }
 
 func editJudulKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
-	var judul, konfirmasi, inputKonfirmasi string
+	var konfirmasi, judul string
 
 	fmt.Print("Masukkan judul baru: ")
-	inputJudul, _ := reader.ReadString('\n')
-	judul = strings.TrimSpace(inputJudul)
+	fmt.Scan(&judul)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah judul dari %s menjadi %s? (y/n): ", data[i].Judul, judul)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&konfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Judul = judul
@@ -260,16 +249,13 @@ func editJudulKonten(data *kontenArray, n int, i int) {
 }
 
 func editPlatformKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var platform, konfirmasi, inputPlatform, inputKonfirmasi string
 
 	fmt.Print("Masukkan platform baru: ")
-	inputPlatform, _ = reader.ReadString('\n')
-	platform = strings.TrimSpace(inputPlatform)
+	fmt.Scan(&inputPlatform)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah platform dari %s menjadi %s? (y/n): ", data[i].Platform, platform)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Platform = platform
@@ -282,16 +268,13 @@ func editPlatformKonten(data *kontenArray, n int, i int) {
 }
 
 func editKategoriKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var kategori, konfirmasi, inputKategori, inputKonfirmasi string
 
 	fmt.Print("Masukkan kategori baru: ")
-	inputKategori, _ = reader.ReadString('\n')
-	kategori = strings.TrimSpace(inputKategori)
+	fmt.Scan(&inputKategori)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah kategori dari %s menjadi %s? (y/n): ", data[i].Kategori, kategori)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Kategori = kategori
@@ -304,16 +287,13 @@ func editKategoriKonten(data *kontenArray, n int, i int) {
 }
 
 func editTanggalKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var tanggal, konfirmasi, inputTanggal, inputKonfirmasi string
 
 	fmt.Print("Masukkan tanggal baru: ")
-	inputTanggal, _ = reader.ReadString('\n')
-	tanggal = strings.TrimSpace(inputTanggal)
+	fmt.Scan(&inputTanggal)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah tanggal dari %s menjadi %s? (y/n): ", data[i].Tanggal, tanggal)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Tanggal = tanggal
@@ -326,16 +306,13 @@ func editTanggalKonten(data *kontenArray, n int, i int) {
 }
 
 func editJamKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var jam, konfirmasi, inputJam, inputKonfirmasi string
 
 	fmt.Print("Masukkan jam baru: ")
-	inputJam, _ = reader.ReadString('\n')
-	jam = strings.TrimSpace(inputJam)
+	fmt.Scan(&inputJam)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah jam dari %s menjadi %s? (y/n): ", data[i].Jam, jam)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Jam = jam
@@ -348,7 +325,6 @@ func editJamKonten(data *kontenArray, n int, i int) {
 }
 
 func editLikeKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var like int
 	var konfirmasi, inputKonfirmasi string
 
@@ -356,8 +332,7 @@ func editLikeKonten(data *kontenArray, n int, i int) {
 	fmt.Scan(&like)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah jumlah like dari %d menjadi %d? (y/n): ", data[i].Like, like)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Like = like
@@ -370,7 +345,6 @@ func editLikeKonten(data *kontenArray, n int, i int) {
 }
 
 func editKomentarKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var komentar int
 	var konfirmasi, inputKonfirmasi string
 
@@ -378,8 +352,7 @@ func editKomentarKonten(data *kontenArray, n int, i int) {
 	fmt.Scan(&komentar)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah jumlah komentar dari %d menjadi %d? (y/n): ", data[i].Komentar, komentar)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Komentar = komentar
@@ -392,7 +365,6 @@ func editKomentarKonten(data *kontenArray, n int, i int) {
 }
 
 func editShareKonten(data *kontenArray, n int, i int) {
-	var reader = bufio.NewReader(os.Stdin)
 	var share int
 	var konfirmasi, inputKonfirmasi string
 
@@ -400,8 +372,7 @@ func editShareKonten(data *kontenArray, n int, i int) {
 	fmt.Scan(&share)
 
 	fmt.Printf("Apakah anda yakin ingin mengubah jumlah share dari %d menjadi %d? (y/n): ", data[i].Share, share)
-	inputKonfirmasi, _ = reader.ReadString('\n')
-	konfirmasi = strings.TrimSpace(inputKonfirmasi)
+	fmt.Scan(&inputKonfirmasi)
 
 	if konfirmasi == "Y" || konfirmasi == "y" {
 		data[i].Share = share
@@ -415,7 +386,7 @@ func editShareKonten(data *kontenArray, n int, i int) {
 
 // prosedur deleteKonten
 func deleteKonten(pilihan int, data *kontenArray, n *int) {
-	var i int
+	var i, j int
 	var judul string
 
 	fmt.Println("=== Menu Hapus Konten ===")
@@ -427,7 +398,6 @@ func deleteKonten(pilihan int, data *kontenArray, n *int) {
 	if pilihan == 1 {
 		if *n == 0 {
 			fmt.Println("Tidak ada konten yang tersedia.")
-			return
 		}
 
 		fmt.Println("Daftar Konten:")
@@ -439,13 +409,21 @@ func deleteKonten(pilihan int, data *kontenArray, n *int) {
 		fmt.Scan(&judul)
 
 		for i = 0; i < *n; i++ {
-			if strings.EqualFold(data[i].Judul, judul) {
-				for j := i; j < *n-1; j++ {
+			//harus diubah jangan pakai library strings
+			//if strings.EqualFold(data[i].Judul, judul) {
+			//	for j = i; j < *n-1; j++ {
+			//		data[j] = data[j+1]
+			//	}
+			//	*n--
+			//	fmt.Println("Konten berhasil dihapus.")
+			//}
+			if data[i].Judul == judul {
+				fmt.Printf("Konten yang dihapus: %s\n", data[i].Judul)
+				for j = i; j < *n-1; j++ {
 					data[j] = data[j+1]
 				}
 				*n--
 				fmt.Println("Konten berhasil dihapus.")
-				return
 			}
 		}
 		fmt.Println("Konten tidak ditemukan.")
@@ -453,11 +431,9 @@ func deleteKonten(pilihan int, data *kontenArray, n *int) {
 	} else if pilihan == 2 {
 		fmt.Println("Kembali ke Kustomisasi Data")
 		kustomisasiDataKonten(0, *data, *n)
-		return
 	} else {
 		fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
 		deleteKonten(pilihan, data, n)
-		return
 	}
 
 	fmt.Println("=== Daftar Konten Saat Ini ===")
@@ -472,6 +448,7 @@ func deleteKonten(pilihan int, data *kontenArray, n *int) {
 // prosedur tampilkanSemuaKonten
 func tampilkanSemuaKonten(data kontenArray, n int) {
 	var i int
+	var tanggalJam string
 
 	if n == 0 {
 		fmt.Println("Tidak ada konten yang tersedia.")
@@ -481,10 +458,12 @@ func tampilkanSemuaKonten(data kontenArray, n int) {
 	fmt.Println("\n=== Daftar Konten ===")
 	fmt.Printf("%-4s %-16s %-10s %-10s %-10s %-6s %-6s %-6s\n",
 		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share")
-	fmt.Println(strings.Repeat("-", 80))
+	for i = 0; i < 75; i++ {
+		fmt.Print("-")
+	}
 
 	for i = 0; i < n; i++ {
-		tanggalJam := data[i].Tanggal + " " + data[i].Jam
+		tanggalJam = data[i].Tanggal + " " + data[i].Jam
 		fmt.Printf("%d. %-16s %-10s %-10s %-10s %-6d %-6d %-6d\n",
 			i+1, data[i].Judul, data[i].Platform, data[i].Kategori,
 			tanggalJam, data[i].Like, data[i].Komentar, data[i].Share)
@@ -520,48 +499,65 @@ func cariKonten(data kontenArray, n int) {
 
 func cariKontenJudul(data kontenArray, n int) {
 	var pilihan int
+	var hasil string
+	var kembaliKeMenuUtama bool
 
-	fmt.Println("=== Menu Cari Konten ===")
-	fmt.Println("1. Cari Konten (Judul) (sequential search)")
-	fmt.Println("2. Cari Konten (Judul) (binary search)")
-	fmt.Println("3. Kembali ke Menu Utama")
-	fmt.Print("Pilih menu: ")
-	fmt.Scan(&pilihan)
+	for !kembaliKeMenuUtama {
+		fmt.Println("=== Menu Cari Konten ===")
+		fmt.Println("1. Cari Konten (Judul) (sequential search)")
+		fmt.Println("2. Cari Konten (Judul) (binary search)")
+		fmt.Println("3. Kembali ke Menu Utama")
+		fmt.Print("Pilih menu: ")
+		fmt.Scan(&pilihan)
 
-	switch pilihan {
-	case 1:
-		sequentialSearchJudul(data, n)
-	case 2:
-		binarySearchJudul(data, n)
-	case 3:
-		menu(0, data, n)
-	default:
-		fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
-		cariKonten(data, n)
+		switch pilihan {
+		case 1:
+			hasil = sequentialSearchJudul(data, n)
+			fmt.Println("Konten berhasil ditemukan (Sequential Search):", hasil)
+		case 2:
+			hasil = binarySearchJudul(data, n)
+			fmt.Println("Konten berhasil ditemukan (Binary Search):", hasil)
+		case 3:
+			kembaliKeMenuUtama = true
+		default:
+			fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
+		}
+
+		fmt.Println()
 	}
+	menu(0, data, n)
 }
 
 func cariKontenKategori(data kontenArray, n int) {
 	var pilihan int
+	var hasil string
+	var kembaliKeMenuUtama bool
 
-	fmt.Println("=== Menu Cari Kategori ===")
-	fmt.Println("1. Cari Konten (Kategori) (sequential search)")
-	fmt.Println("2. Cari Konten (Kategori) (binary search)")
-	fmt.Println("3. Kembali ke Menu Utama")
-	fmt.Print("Pilih menu: ")
-	fmt.Scan(&pilihan)
+	for !kembaliKeMenuUtama {
+		fmt.Println("=== Menu Cari Kategori ===")
+		fmt.Println("1. Cari Konten (Kategori) (sequential search)")
+		fmt.Println("2. Cari Konten (Kategori) (binary search)")
+		fmt.Println("3. Kembali ke Menu Utama")
+		fmt.Print("Pilih menu: ")
+		fmt.Scan(&pilihan)
 
-	switch pilihan {
-	case 1:
-		sequentialSearchKategori(data, n)
-	case 2:
-		binarySearchKategori(data, n)
-	case 3:
-		menu(0, data, n)
-	default:
-		fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
-		cariKonten(data, n)
+		switch pilihan {
+		case 1:
+			hasil = sequentialSearchKategori(data, n)
+			fmt.Println("Konten berhasil ditemukan (Sequential Search):", hasil)
+		case 2:
+			hasil = binarySearchKategori(data, n)
+			fmt.Println("Konten berhasil ditemukan (Binary Search):", hasil)
+		case 3:
+			kembaliKeMenuUtama = true
+		default:
+			fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
+		}
+
+		fmt.Println()
 	}
+
+	menu(0, data, n)
 }
 
 // prosedur sequentialSearchJudul
@@ -570,21 +566,17 @@ func sequentialSearchJudul(data kontenArray, n int) string {
 	var judul string
 
 	fmt.Print("Masukkan judul konten yang ingin dicari: ")
-	fmt.Scan(&judul)
+	fmt.Scanln(&judul)
 
 	found = -1
 	i = 0
 	for i < n && found == -1 {
 		if data[i].Judul == judul {
-			found = i
+			return data[i].Judul
 		}
 		i++
 	}
-	if found != -1 {
-		return fmt.Sprintf("Konten ditemukan: %s", data[found].Judul)
-	} else {
-		return "Konten tidak ditemukan."
-	}
+	return "Konten tidak ditemukan."
 }
 
 // prosedur binarySearchJudul
@@ -605,14 +597,10 @@ func binarySearchJudul(data kontenArray, n int) string {
 		} else if judul > data[middle].Judul {
 			left = middle + 1
 		} else {
-			found = middle
+			return data[middle].Judul
 		}
 	}
-	if found != -1 {
-		return fmt.Sprintf("Konten ditemukan: %s", data[found].Judul)
-	} else {
-		return "Konten tidak ditemukan."
-	}
+	return "Konten tidak ditemukan."
 }
 
 // prosedur sequentialSearchKategori
@@ -627,15 +615,11 @@ func sequentialSearchKategori(data kontenArray, n int) string {
 	i = 0
 	for i < n && found == -1 {
 		if data[i].Kategori == kategori {
-			found = i
+			return data[i].Kategori
 		}
 		i++
 	}
-	if found != -1 {
-		return fmt.Sprintf("Konten ditemukan: %s", data[found].Kategori)
-	} else {
-		return "Konten tidak ditemukan."
-	}
+	return "Konten tidak ditemukan."
 }
 
 // prosedur binarySearchKategori
@@ -656,84 +640,76 @@ func binarySearchKategori(data kontenArray, n int) string {
 		} else if kategori > data[middle].Kategori {
 			left = middle + 1
 		} else {
-			found = middle
+			return data[middle].Kategori
 		}
 	}
-	if found != -1 {
-		return fmt.Sprintf("Konten ditemukan: %s", data[found].Kategori)
-	} else {
-		return "Konten tidak ditemukan."
-	}
+	return "Konten tidak ditemukan."
 }
 
 // prosedur urutkanDaftarKonten
 func urutkanDaftarKonten(data kontenArray, n int) {
-	var pilihan int
+	var pilihan, subPilihan int
+	var kembaliKeMenuUtama bool
 
-	fmt.Println("=== Menu Urutkan Daftar Konten ===")
-	fmt.Println("1. Urutkan berdasarkan tanggal posting")
-	fmt.Println("2. Urutkan berdasarkan engagement")
-	fmt.Println("3. Kembali ke Menu Utama")
-	fmt.Print("Pilih menu: ")
-
-	fmt.Scan(&pilihan)
-
-	if pilihan == 1 {
-		fmt.Println("=== Urutkan berdasarkan tanggal posting ===")
-		fmt.Println("1. Urutkan berdasarkan tanggal posting (Selection Sort)")
-		fmt.Println("2. Urutkan berdasarkan tanggal posting (Insertion Sort)")
-		fmt.Println("3. Kembali")
+	for !kembaliKeMenuUtama {
+		fmt.Println("=== Menu Urutkan Daftar Konten ===")
+		fmt.Println("1. Urutkan berdasarkan tanggal posting")
+		fmt.Println("2. Urutkan berdasarkan engagement")
+		fmt.Println("3. Kembali ke Menu Utama")
 		fmt.Print("Pilih menu: ")
 		fmt.Scan(&pilihan)
 
-		switch pilihan {
-		case 1:
-			// selection sort
-			selectionSortTanggal(&data, n)
-		case 2:
-			// insertion sort
-			insertionSortTanggal(data, n)
-		case 3:
-			urutkanDaftarKonten(data, n)
-		default:
+		if pilihan == 1 {
+			fmt.Println("=== Urutkan berdasarkan tanggal posting ===")
+			fmt.Println("1. Urutkan berdasarkan tanggal posting (Selection Sort)")
+			fmt.Println("2. Urutkan berdasarkan tanggal posting (Insertion Sort)")
+			fmt.Println("3. Kembali")
+			fmt.Print("Pilih menu: ")
+			fmt.Scan(&subPilihan)
+
+			if subPilihan == 1 {
+				selectionSortTanggal(&data, n)
+			} else if subPilihan == 2 {
+				insertionSortTanggal(data, n)
+			} else if subPilihan == 3 {
+				kembaliKeMenuUtama = true
+			} else {
+				fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
+			}
+		} else if pilihan == 2 {
+			fmt.Println("=== Urutkan berdasarkan engagement ===")
+			fmt.Println("1. Urutkan berdasarkan engagement (Selection Sort)")
+			fmt.Println("2. Urutkan berdasarkan engagement (Insertion Sort)")
+			fmt.Println("3. Kembali")
+			fmt.Print("Pilih menu: ")
+			fmt.Scan(&subPilihan)
+
+			if subPilihan == 1 {
+				selectionSortEngagement(data, n)
+			} else if subPilihan == 2 {
+				insertionSortEngagement(data, n)
+			} else if subPilihan == 3 {
+				kembaliKeMenuUtama = true
+			} else {
+				fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
+			}
+		} else if pilihan == 3 {
+			kembaliKeMenuUtama = true
+		} else {
 			fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
-			urutkanDaftarKonten(data, n)
 		}
 
-	} else if pilihan == 2 {
-		fmt.Println("=== Urutkan berdasarkan engagement ===")
-		fmt.Println("1. Urutkan berdasarkan engagement (Selection Sort)")
-		fmt.Println("2. Urutkan berdasarkan engagement (Insertion Sort)")
-		fmt.Println("3. Kembali")
-		fmt.Print("Pilih menu: ")
-		fmt.Scan(&pilihan)
-
-		switch pilihan {
-		case 1:
-			// selection sort
-			selectionSortEngagement(data, n)
-		case 2:
-			// insertion sort
-			insertionSortEngagement(data, n)
-		case 3:
-			urutkanDaftarKonten(data, n)
-		default:
-			fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
-			urutkanDaftarKonten(data, n)
-		}
-
-	} else if pilihan == 3 {
-		menu(0, data, n)
-	} else {
-		fmt.Println("Pilihan tidak valid. Silakan coba lagi.")
-		urutkanDaftarKonten(data, n)
+		fmt.Println()
 	}
+
+	menu(0, data, n)
 }
 
 // prosedur selectionSortTanggal
 func selectionSortTanggal(data *kontenArray, n int) {
 	var pass, idx, i int
 	var temp Konten
+	var tanggalJam string
 
 	pass = 1
 	for pass <= n-1 {
@@ -754,10 +730,12 @@ func selectionSortTanggal(data *kontenArray, n int) {
 	fmt.Println("=== Konten yang telah diurutkan ===")
 	fmt.Printf("%-4s %-16s %-10s %-10s %-10s %-6s %-6s %-6s\n",
 		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share")
-	fmt.Println(strings.Repeat("-", 80))
+	for i = 0; i < 75; i++ {
+		fmt.Print("-")
+	}
 
 	for i = 0; i < n; i++ {
-		tanggalJam := data[i].Tanggal + " " + data[i].Jam
+		tanggalJam = data[i].Tanggal + " " + data[i].Jam
 		fmt.Printf("%d. %-16s %-10s %-10s %-10s %-6d %-6d %-6d\n",
 			i+1, data[i].Judul, data[i].Platform, data[i].Kategori,
 			tanggalJam, data[i].Like, data[i].Komentar, data[i].Share)
@@ -768,6 +746,7 @@ func selectionSortTanggal(data *kontenArray, n int) {
 func insertionSortTanggal(data kontenArray, n int) {
 	var pass, i int
 	var temp Konten
+	var tanggalJam string
 
 	pass = 1
 	for pass <= n-1 {
@@ -785,10 +764,12 @@ func insertionSortTanggal(data kontenArray, n int) {
 	fmt.Println("=== Konten yang telah diurutkan ===")
 	fmt.Printf("%-4s %-16s %-10s %-10s %-10s %-6s %-6s %-6s\n",
 		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share")
-	fmt.Println(strings.Repeat("-", 80))
+	for i = 0; i < 75; i++ {
+		fmt.Print("-")
+	}
 
 	for i = 0; i < n; i++ {
-		tanggalJam := data[i].Tanggal + " " + data[i].Jam
+		tanggalJam = data[i].Tanggal + " " + data[i].Jam
 		fmt.Printf("%d. %-16s %-10s %-10s %-10s %-6d %-6d %-6d\n",
 			i+1, data[i].Judul, data[i].Platform, data[i].Kategori,
 			tanggalJam, data[i].Like, data[i].Komentar, data[i].Share)
@@ -800,6 +781,7 @@ func selectionSortEngagement(data kontenArray, n int) {
 	//dari jumlah like
 	var pass, idx, i int
 	var temp Konten
+	var tanggalJam string
 
 	pass = 1
 	for pass <= n-1 {
@@ -820,9 +802,11 @@ func selectionSortEngagement(data kontenArray, n int) {
 	fmt.Println("=== Konten yang telah diurutkan ===")
 	fmt.Printf("%-4s %-16s %-10s %-10s %-10s %-6s %-6s %-6s\n",
 		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share")
-	fmt.Println(strings.Repeat("-", 80))
+	for i = 0; i < 75; i++ {
+		fmt.Print("-")
+	}
 	for i = 0; i < n; i++ {
-		tanggalJam := data[i].Tanggal + " " + data[i].Jam
+		tanggalJam = data[i].Tanggal + " " + data[i].Jam
 		fmt.Printf("%d. %-16s %-10s %-10s %-10s %-6d %-6d %-6d\n",
 			i+1, data[i].Judul, data[i].Platform, data[i].Kategori,
 			tanggalJam, data[i].Like, data[i].Komentar, data[i].Share)
@@ -833,6 +817,7 @@ func selectionSortEngagement(data kontenArray, n int) {
 func insertionSortEngagement(data kontenArray, n int) {
 	var pass, i int
 	var temp Konten
+	var tanggalJam string
 
 	pass = 1
 	for pass <= n-1 {
@@ -850,11 +835,84 @@ func insertionSortEngagement(data kontenArray, n int) {
 	fmt.Println("=== Konten yang telah diurutkan ===")
 	fmt.Printf("%-4s %-16s %-10s %-10s %-10s %-6s %-6s %-6s\n",
 		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share")
-	fmt.Println(strings.Repeat("-", 80))
+	for i = 0; i < 75; i++ {
+		fmt.Print("-")
+	}
 	for i = 0; i < n; i++ {
-		tanggalJam := data[i].Tanggal + " " + data[i].Jam
+		tanggalJam = data[i].Tanggal + " " + data[i].Jam
 		fmt.Printf("%d. %-16s %-10s %-10s %-10s %-6d %-6d %-6d\n",
 			i+1, data[i].Judul, data[i].Platform, data[i].Kategori,
 			tanggalJam, data[i].Like, data[i].Komentar, data[i].Share)
 	}
+}
+
+func urutkanBerdasarkanEngagement(data kontenArray, n int) {
+	var tglAwal, tglAkhir string
+	var i, j, maxIdx, m int
+	var adaKonten bool
+	var tempKonten, k Konten
+	var filtered [maxContent]Konten
+	var filteredEngagement [maxContent]float64
+
+	fmt.Print("Masukkan tanggal awal (format: YYYY-MM-DD, contoh: 2025-02-01): ")
+	fmt.Scan(&tglAwal)
+	fmt.Print("Masukkan tanggal akhit (format: YYYY-MM-DD, contoh: 2025-02-01): ")
+	fmt.Scan(&tglAkhir)
+
+	if n == 0 {
+		fmt.Println("Tidak ada konten yang tersedia.")
+		menu(0, data, n)
+		return
+	}
+
+	m = 0
+
+	for i = 0; i < n; i++ {
+		if data[i].Tanggal >= tglAwal && data[i].Tanggal <= tglAkhir {
+			filtered[m] = data[i]
+			filteredEngagement[m] = float64(data[i].Like+data[i].Komentar+data[i].Share) / 3.0
+			m++
+			adaKonten = true
+		}
+	}
+
+	if !adaKonten {
+		fmt.Println("Tidak ada konten yang ditemukan dalam rentang tanggal tersebut.")
+		menu(0, data, n)
+		return
+	}
+	for i = 0; i < m-1; i++ {
+		maxIdx = i
+		for j = i + 1; j < m; j++ {
+			if filteredEngagement[j] > filteredEngagement[maxIdx] {
+				maxIdx = j
+			}
+		}
+		if maxIdx != i {
+			tempKonten = filtered[i]
+			filtered[i] = filtered[maxIdx]
+			filtered[maxIdx] = tempKonten
+
+			tempEng := filteredEngagement[i]
+			filteredEngagement[i] = filteredEngagement[maxIdx]
+			filteredEngagement[maxIdx] = tempEng
+		}
+	}
+
+	fmt.Println("\n=== Daftar Konten Berdasarkan Engagement (Tinggi ke Rendah) ===")
+	fmt.Printf("%-3s %-16s %-10s %-10s %-15s %-6s %-9s %-6s %-10s\n",
+		"No", "Judul", "Platform", "Kategori", "Tanggal & Jam", "Like", "Komentar", "Share", "Engagement")
+	for j = 0; j < 100; j++ {
+		fmt.Print("-")
+	}
+	fmt.Println()
+
+	for i = 0; i < m; i++ {
+		k = filtered[i]
+		fmt.Printf("%-3d %-16s %-10s %-10s %-15s %-6d %-9d %-6d %-10.2f\n",
+			i+1, k.Judul, k.Platform, k.Kategori,
+			k.Tanggal+" "+k.Jam, k.Like, k.Komentar, k.Share, filteredEngagement[i])
+	}
+
+	menu(0, data, n)
 }
